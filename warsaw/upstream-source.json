@@ -1,0 +1,7 @@
+{
+  "remote": "https://android.googlesource.com/kernel/common",
+  "commit": "c4127a25dcf3c8923daffa62632816f6acf0e135",
+  "archive_sha256": "a2a4ccaecb641474e325e6556e710186cc104105188f2ea853242a3d00862a0c",
+  "patch_sha256": "1bf531b034caef087ef1561676d466c79cf23a91cff65301495b8a880325084d",
+  "historical_git_objects_included": false
+}

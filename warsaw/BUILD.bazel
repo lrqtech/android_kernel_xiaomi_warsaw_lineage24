@@ -1,0 +1,50 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("//build/bazel_common_rules/dist:dist.bzl", "copy_to_dist_dir")
+load("//build/kernel/kleaf:constants.bzl", "DEFAULT_GKI_OUTS")
+load("//build/kernel/kleaf:kernel.bzl", "kernel_build", "kernel_modules_install")
+load("//common:modules.bzl", "get_gki_modules_list", "get_gki_protected_modules_list")
+
+package(default_visibility = ["//visibility:public"])
+
+_MODULES = get_gki_modules_list("arm64")
+write_file(
+    name = "protected_modules",
+    out = "gki_protected_modules",
+    content = [m for m in get_gki_protected_modules_list("arm64") if m in _MODULES] + [""],
+)
+kernel_build(
+    name = "kernel_aarch64",
+    srcs = ["//common:kernel_aarch64_sources"],
+    arch = "arm64",
+    page_size = "4k",
+    build_config = "build.config",
+    outs = DEFAULT_GKI_OUTS,
+    implicit_outs = ["scripts/sign-file", "certs/signing_key.pem", "certs/signing_key.x509"],
+    defconfig_fragments = ["no_kunit_defconfig"],
+    make_goals = ["Image", "Image.lz4", "Image.gz", "modules"],
+    module_implicit_outs = _MODULES,
+    kmi_symbol_list = "abi_gki_aarch64_production",
+    trim_nonlisted_kmi = True,
+    kmi_symbol_list_strict_mode = True,
+    protected_exports_list = "protected-exports",
+    protected_modules_list = ":protected_modules",
+    keep_module_symvers = True,
+    collect_unstripped_modules = True,
+    strip_modules = True,
+)
+kernel_modules_install(
+    name = "modules_install",
+    kernel_build = ":kernel_aarch64",
+    kernel_modules = [],
+)
+filegroup(
+    name = "gki_modules",
+    srcs = [":kernel_aarch64/" + m for m in _MODULES],
+)
+copy_to_dist_dir(
+    name = "kernel_aarch64_dist",
+    data = [":kernel_aarch64", ":gki_modules", ":modules_install"],
+    flat = True,
+    dist_dir = "out/warsaw/dist",
+    log = "info",
+)

@@ -1,0 +1,37 @@
+diff --git a/include/linux/module.h b/include/linux/module.h
+index bacc10994..b33ecdbf5 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -545,10 +545,12 @@ struct module {
+ 	int num_static_call_sites;
+ 	struct static_call_site *static_call_sites;
+ #endif
+-#if IS_ENABLED(CONFIG_KUNIT)
++/*
++ * Preserve the Android 15 vendor module ABI when the KUnit runtime
++ * is disabled. These members are unused without CONFIG_KUNIT.
++ */
+ 	int num_kunit_suites;
+ 	struct kunit_suite **kunit_suites;
+-#endif
+ 
+ 
+ #ifdef CONFIG_LIVEPATCH
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 568cf789c..48b8b738c 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1370,9 +1370,11 @@ struct task_struct {
+ 	struct kmsan_ctx		kmsan_ctx;
+ #endif
+ 
+-#if IS_ENABLED(CONFIG_KUNIT)
++/*
++ * Preserve the Android 15 vendor module ABI when the KUnit runtime
++ * is disabled. These members are unused without CONFIG_KUNIT.
++ */
+ 	struct kunit			*kunit_test;
+-#endif
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ 	/* Index of current stored address in ret_stack: */
