@@ -1,33 +1,36 @@
-# Xiaomi Warsaw GKI source for LineageOS 24
+# Xiaomi warsaw kernel
 
-Full Google Android common kernel source at
-`c4127a25dcf3c8923daffa62632816f6acf0e135`, with Warsaw's no-KUnit GKI
-integration. The source baseline is Linux 6.6.118 / Android 15 GKI generation 8,
-used with the Android 17 Warsaw userspace. This is a fresh snapshot with no
-imported Git history, not a claim of official LineageOS acceptance.
+Android common kernel for LineageOS 24 on Xiaomi warsaw.
 
-## Changes from upstream
+| Setting | Value |
+| --- | --- |
+| Upstream commit | `c4127a25dcf3c8923daffa62632816f6acf0e135` |
+| Linux version | 6.6.118 |
+| GKI | Android 15, generation 8 |
+| Page size | 4 KiB |
+| Toolchain | r510928 |
+| Userspace | Android 17 |
 
-- `warsaw/no_kunit_defconfig` disables KUnit.
-- The dedicated Kleaf target selects 78 production GKI modules, excluding
-  the 18 KUnit framework/test modules and 34 KUnit interfaces.
-- The production KMI list and protected exports preserve the retained OEM
-  module ABI. Two conditional structure layouts keep their original fields
-  even with KUnit disabled. The exact header change is recorded in
-  `warsaw/preserve-production-kmi-layout.patch` and is already applied.
-- `warsaw/workspace.xml` pins the common source snapshot and its complete
-  toolchain/build dependency workspace. The original Google manifest is
-  retained as `warsaw/manifest_15863337.xml` for provenance.
+## Warsaw configuration
 
-KUnit source files remain in the upstream source tree; they are disabled in
-the selected build, not deleted from Linux. The 538 OEM vendor drivers are
-not implemented in this GKI repository; their unchanged OTA modules are in
-the companion vendor repository.
+`warsaw/no_kunit_defconfig` disables KUnit. The Kleaf target builds 78
+production GKI modules, leaving out the 18 KUnit modules and 34 KUnit
+interfaces. KUnit source files remain in the upstream tree.
+
+The production KMI list and protected exports preserve the ABI used by the
+OEM modules. Two conditional structure layouts retain their original fields
+when KUnit is disabled. The header changes are already applied and are
+recorded in [preserve-production-kmi-layout.patch](warsaw/preserve-production-kmi-layout.patch).
+
+The 538 OEM driver modules are supplied as OTA binaries by the
+[vendor repository](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24).
+Their sources are not part of this kernel tree.
 
 ## Build
 
-Use a separate Linux Kleaf workspace with Git, Repo and access to this private
-repository. The pinned manifest links `common/warsaw` to the workspace root.
+Use a separate Linux Kleaf workspace with Git, Repo and access to this
+repository. The manifest selects the toolchain and build dependencies and
+links `common/warsaw` into the workspace root.
 
 ```sh
 git clone --branch lineage-24.0 https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24.git "$HOME/warsaw-kernel-source"
@@ -38,30 +41,36 @@ repo sync -c -j4
 tools/bazel run --jobs=32 --config=stamp --lto=default //warsaw:kernel_aarch64_dist -- --destdir="$PWD/dist"
 ```
 
-The target uses the pinned r510928 toolchain and 4 KiB pages. Preserve strict
-KMI checking. This source publication has not rerun the full kernel build;
-it restores the original pinned source and recorded integration inputs.
+Keep strict KMI checking enabled. The full Kleaf build has not yet been rerun
+from this repository checkout.
 
-## Android integration
+## Use with LineageOS
 
-The [device repository](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24)
-consumes the paired input under
-`vendor/xiaomi/warsaw/boot/gki-no-kunit`, supplied by the
-[vendor repository](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24).
-Build GKI separately, then integrate its Image, all 78 signed production
-modules and regenerated dependency indexes as one unit. Preserve the OEM
-modules, firmware and load ordering. A partial replacement can prevent boot.
+The [device tree](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24)
+uses `vendor/xiaomi/warsaw/boot/gki-no-kunit` from the vendor repository.
+To replace that kernel, install the new Image and all 78 signed GKI modules
+together, then regenerate the module indexes. Keep the OEM modules, firmware
+and load order intact. Mixing kernel and module builds can prevent boot.
 
-The archived paired Image has SHA-256
-`b6ef8d3fc7122e02a66f21337c6adde61e3350ebeaf6862713aaeba234d3a512`.
-New root Git metadata, timestamps and generated module-signing keys may
-change rebuilt binary hashes. Source/KMI correspondence is not a promise
-of byte-identical output. Private signing keys are intentionally absent.
+The supplied Image has SHA-256:
 
-## Provenance and license
+```text
+b6ef8d3fc7122e02a66f21337c6adde61e3350ebeaf6862713aaeba234d3a512
+```
 
-Upstream: https://android.googlesource.com/kernel/common
+Rebuilds can differ because of Git metadata, timestamps and generated signing
+keys. The original private signing key is not included, so identical binary
+hashes are not guaranteed.
 
-`warsaw/upstream-source.json` records the upstream commit, archive digest and
-local header patch digest. Linux COPYING, LICENSES, SPDX identifiers and
-file-level notices are retained. Consult them for the applicable license.
+## Source and license
+
+Upstream: [Google Android common kernel](https://android.googlesource.com/kernel/common).
+
+[upstream-source.json](warsaw/upstream-source.json) records the source commit,
+archive hash and local header patch hash.
+[manifest_15863337.xml](warsaw/manifest_15863337.xml) is the original Google
+workspace manifest; [workspace.xml](warsaw/workspace.xml) selects the
+dependencies used here.
+
+See `COPYING`, `LICENSES` and the notices in individual files for license
+terms.
