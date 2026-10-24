@@ -9,7 +9,7 @@
     <linkfile dest="WORKSPACE.bzlmod" src="kleaf/bzlmod/bazel.WORKSPACE.bzlmod" />
   </project>
   <project path="build/bazel_common_rules" name="platform/build/bazel_common_rules" groups="ddk" revision="9530bee133971f25758a2e1085755200999ca1bf" />
-  <project path="common" name="lrqtech/android_kernel_xiaomi_warsaw_lineage24" revision="refs/tags/warsaw-20261015" remote="warsaw">
+  <project path="common" name="lrqtech/android_kernel_xiaomi_warsaw_lineage24" revision="refs/tags/warsaw-20261024" remote="warsaw">
     <linkfile src="warsaw" dest="warsaw" />
   </project>
   <project path="kernel/configs" name="kernel/configs" revision="bd79f38685cf939ab836dd8ddd2e01506ccff47a" upstream="main" dest-branch="main" />

@@ -26,6 +26,11 @@ The 538 OEM driver modules are supplied as OTA binaries by the
 [vendor repository](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24).
 Their sources are not part of this kernel tree.
 
+The `warsaw-20261024` tag pairs this source with the current device and vendor
+trees. The kernel source, Image, and GKI module set are unchanged from the
+October 15 publication. The current update adds an input verifier and refreshes
+the integration instructions.
+
 ## Build
 
 Use a separate Linux Kleaf workspace with Git, Repo and access to this
@@ -33,7 +38,7 @@ repository. The manifest selects the toolchain and build dependencies and
 links `common/warsaw` into the workspace root.
 
 ```sh
-git clone --branch lineage-24.0 https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24.git "$HOME/warsaw-kernel-source"
+git clone --branch warsaw-20261024 https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24.git "$HOME/warsaw-kernel-source"
 mkdir -p "$HOME/android/kernel-warsaw"
 cd "$HOME/android/kernel-warsaw"
 repo init --standalone-manifest -u "file://$HOME/warsaw-kernel-source/warsaw/workspace.xml"
@@ -61,6 +66,25 @@ b6ef8d3fc7122e02a66f21337c6adde61e3350ebeaf6862713aaeba234d3a512
 Rebuilds can differ because of Git metadata, timestamps and generated signing
 keys. The original private signing key is not included, so identical binary
 hashes are not guaranteed.
+
+## Check the paired vendor inputs
+
+After retrieving the vendor repository's LFS objects, run:
+
+```sh
+python3 warsaw/check-vendor.py /path/to/vendor/xiaomi/warsaw
+```
+
+This checks the recorded GKI hashes, the 78-module set, 4 KiB configuration,
+disabled KUnit, and the expected Image and certificate. It does not rebuild
+the kernel or establish that OEM modules will work on a phone. Keep strict KMI
+checking enabled when rebuilding. Never publish the generated private module
+signing key.
+
+Normal boot and recovery SELinux modes are selected by the device tree; the
+current userdebug source set keeps both permissive during bring-up. See the
+[device status](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/STATUS.md)
+for runtime validation still needed.
 
 ## Source and license
 

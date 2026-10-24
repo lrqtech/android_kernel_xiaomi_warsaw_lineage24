@@ -1,0 +1,11 @@
+{
+  "vendor_repository": "https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24",
+  "source_set": "warsaw-20261024",
+  "common_commit": "c4127a25dcf3c8923daffa62632816f6acf0e135",
+  "gki_modules": 78,
+  "sha256": {
+    "Image": "b6ef8d3fc7122e02a66f21337c6adde61e3350ebeaf6862713aaeba234d3a512",
+    "kernel.config": "5fc72b8c3948c8795f2976655965326d429f69ce55174305d1ede0330b97be90",
+    "signing-key.x509": "aa1353d49f1e507dfe5e7855736392e5cab72b9f522cb778698faf0b1a2c74dc"
+  }
+}
