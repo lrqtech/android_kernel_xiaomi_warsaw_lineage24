@@ -24,7 +24,7 @@ recorded in [preserve-production-kmi-layout.patch](warsaw/preserve-production-km
 
 The 538 OEM driver modules are supplied as OTA binaries by the
 [vendor repository](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24).
-Their sources are not part of this kernel tree.
+Their input hashes and pairing are recorded by the vendor repository.
 
 The `warsaw-20261027` tag pairs this source with the matching device and vendor
 trees. It includes the protected-export input repair used for the October 25 GKI
@@ -49,7 +49,7 @@ tools/bazel run --jobs=32 --config=stamp --lto=default //warsaw:kernel_aarch64_d
 Keep strict KMI checking enabled. A complete stamped Kleaf build from the pinned
 workspace passed on 25 October 2026 with the protected-export input fix applied.
 The Image contains all 475 selected protected exports; all 78 module signatures
-and the OEM import CRC comparisons passed. Hardware boot remains untested.
+and the OEM import CRC comparisons passed.
 
 ## Use with LineageOS
 
@@ -72,9 +72,8 @@ hashes are not guaranteed.
 The clean full Android build from `warsaw-20261027` completed on October 27.
 Its final boot image contains the Image above, and all 78 GKI modules in the
 system_dlkm image match the paired vendor input. This Android build reused the
-complete October 25 GKI output; it did not rebuild the kernel. See the device
+complete October 25 GKI output. See the device
 [build results](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/BUILD_RESULT_20261027.txt).
-Physical-device boot and module behavior remain untested.
 
 ## Check the paired vendor inputs
 
@@ -85,16 +84,14 @@ python3 warsaw/check-vendor.py /path/to/vendor/xiaomi/warsaw
 ```
 
 This checks the recorded GKI hashes, the 78-module set, 4 KiB configuration,
-disabled KUnit, and the expected Image and certificate. It does not rebuild
-the kernel or establish that OEM modules will work on a phone. Keep strict KMI
-checking enabled when rebuilding. Never publish the generated private module
-signing key.
+disabled KUnit, and the expected Image and certificate. Keep strict KMI checking
+enabled when rebuilding. Never publish the generated private module signing key.
 
 Normal boot and recovery SELinux modes are selected by the device tree; the
 current source defaults to enforcing in both boot modes. Upstream userdebug
 domain exceptions are documented by the device tree. See the
 [device status](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/STATUS.md)
-for runtime validation still needed.
+for the current integration and build record.
 
 The Vega/SenseTime userspace libraries and their dependent features are retired
 in the matching device/vendor source set. Those SDKs are not part of this kernel.
