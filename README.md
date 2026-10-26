@@ -26,10 +26,10 @@ The 538 OEM driver modules are supplied as OTA binaries by the
 [vendor repository](https://github.com/lrqtech/android_vendor_xiaomi_warsaw_lineage24).
 Their sources are not part of this kernel tree.
 
-The `warsaw-20261024` tag pairs this source with the current device and vendor
-trees. The kernel source, Image, and GKI module set are unchanged from the
-October 15 publication. The current update adds an input verifier and refreshes
-the integration instructions.
+The `warsaw-20261027` tag pairs this source with the matching device and vendor
+trees. It includes the protected-export input repair used for the October 25 GKI
+rebuild. Image, all 78 signed GKI modules and the public certificate are supplied
+together by the vendor repository. Earlier source tags remain available.
 
 ## Build
 
@@ -38,7 +38,7 @@ repository. The manifest selects the toolchain and build dependencies and
 links `common/warsaw` into the workspace root.
 
 ```sh
-git clone --branch warsaw-20261024 https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24.git "$HOME/warsaw-kernel-source"
+git clone --branch warsaw-20261027 https://github.com/lrqtech/android_kernel_xiaomi_warsaw_lineage24.git "$HOME/warsaw-kernel-source"
 mkdir -p "$HOME/android/kernel-warsaw"
 cd "$HOME/android/kernel-warsaw"
 repo init --standalone-manifest -u "file://$HOME/warsaw-kernel-source/warsaw/workspace.xml"
@@ -46,8 +46,10 @@ repo sync -c -j4
 tools/bazel run --jobs=32 --config=stamp --lto=default //warsaw:kernel_aarch64_dist -- --destdir="$PWD/dist"
 ```
 
-Keep strict KMI checking enabled. The full Kleaf build has not yet been rerun
-from this repository checkout.
+Keep strict KMI checking enabled. A complete stamped Kleaf build from the pinned
+workspace passed on 25 October 2026 with the protected-export input fix applied.
+The Image contains all 475 selected protected exports; all 78 module signatures
+and the OEM import CRC comparisons passed. Hardware boot remains untested.
 
 ## Use with LineageOS
 
@@ -60,7 +62,7 @@ and load order intact. Mixing kernel and module builds can prevent boot.
 The supplied Image has SHA-256:
 
 ```text
-b6ef8d3fc7122e02a66f21337c6adde61e3350ebeaf6862713aaeba234d3a512
+df170a396bae78b5d77aa5c03ff205d91d6216f67b714382024a5fb465ccdf8a
 ```
 
 Rebuilds can differ because of Git metadata, timestamps and generated signing
@@ -82,9 +84,14 @@ checking enabled when rebuilding. Never publish the generated private module
 signing key.
 
 Normal boot and recovery SELinux modes are selected by the device tree; the
-current userdebug source set keeps both permissive during bring-up. See the
+current source defaults to enforcing in both boot modes. Upstream userdebug
+domain exceptions are documented by the device tree. See the
 [device status](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/STATUS.md)
 for runtime validation still needed.
+
+The Vega/SenseTime userspace libraries and their dependent features are retired
+in the matching device/vendor source set. Those SDKs are not part of this kernel.
+See the vendor README for the retained Qti FD path and disabled camera features.
 
 ## Source and license
 
