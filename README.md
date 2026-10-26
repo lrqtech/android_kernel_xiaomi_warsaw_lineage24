@@ -69,6 +69,13 @@ Rebuilds can differ because of Git metadata, timestamps and generated signing
 keys. The original private signing key is not included, so identical binary
 hashes are not guaranteed.
 
+The clean full Android build from `warsaw-20261027` completed on October 27.
+Its final boot image contains the Image above, and all 78 GKI modules in the
+system_dlkm image match the paired vendor input. This Android build reused the
+complete October 25 GKI output; it did not rebuild the kernel. See the device
+[build results](https://github.com/lrqtech/android_device_xiaomi_warsaw_lineage24/blob/lineage-24.0/docs/BUILD_RESULT_20261027.txt).
+Physical-device boot and module behavior remain untested.
+
 ## Check the paired vendor inputs
 
 After retrieving the vendor repository's LFS objects, run:
